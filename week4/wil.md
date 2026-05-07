@@ -116,7 +116,7 @@ test_data = np.array([
 이 데이터도 기존 입력 데이터와 동일하게 Weight, Length, Diagonal, Height, Width 순서로 구성되어 있다.
 
 새로운 데이터를 로지스틱 회귀 모델에 넣기 전에 먼저 표준화를 진행하였다.
-``python
+```python
 test_data_scaled = ss.transform(test_data)
 ```
 그리고 예측 결과를 확인하였다.
