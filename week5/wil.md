@@ -36,6 +36,7 @@ wine = pd.read_csv('https://bit.ly/wine_csv_data')
 
 먼저 전체 데이터를 훈련 세트와 테스트 세트로 나누었다.
 
+```python
 from sklearn.model_selection import train_test_split
 
 train_input, test_input, train_target, test_target = train_test_split(
@@ -44,21 +45,26 @@ train_input, test_input, train_target, test_target = train_test_split(
     test_size=0.2,
     random_state=42
 )
+```
 
 훈련 세트는 모델을 학습시키는 데 사용하고, 테스트 세트는 최종 성능을 확인하는 데 사용한다.
 
 이전 주차에서도 훈련 데이터와 테스트 데이터를 나누는 것이 중요하다고 배웠다. 모델이 이미 본 데이터로 평가하면 실제보다 성능이 좋게 나올 수 있기 때문에, 테스트 세트는 마지막 평가용으로 따로 두는 것이 필요하다.
 
+* * *
+
 ##  📌4. 검증 세트
 
 이번 주차에서 새롭게 다룬 개념 중 하나는 검증 세트이다.
 
+```python
 sub_input, val_input, sub_target, val_target = train_test_split(
     train_input,
     train_target,
     test_size=0.2,
     random_state=42
 )
+```
 
 기존에는 훈련 세트와 테스트 세트만 나누었지만, 이번에는 훈련 세트를 다시 나누어 실제 학습에 사용할 데이터와 검증에 사용할 데이터를 만들었다.
 
@@ -70,14 +76,18 @@ Test set: 최종 성능을 확인하는 데이터
 
 검증 세트가 필요한 이유는 테스트 세트를 계속 사용하면 테스트 세트에 맞춰서 모델을 고르게 될 수 있기 때문이다. 그래서 여러 설정을 비교할 때는 검증 세트를 사용하고, 테스트 세트는 마지막에 한 번 확인하는 것이 더 적절하다고 이해했다.
 
+* * *
+
 ##  📌5. 결정트리 모델
 
 이번 실습에서는 결정트리 모델을 사용하였다.
 
+```python
 from sklearn.tree import DecisionTreeClassifier
 
 dt = DecisionTreeClassifier(random_state=42)
 dt.fit(sub_input, sub_target)
+```
 
 결정트리는 데이터를 조건에 따라 계속 나누면서 분류하는 모델이다.
 
@@ -85,20 +95,27 @@ dt.fit(sub_input, sub_target)
 
 결정트리는 구조를 시각화할 수 있다는 장점이 있다.
 
+```python
 from sklearn.tree import plot_tree
 
 plot_tree(dt)
+```
 
 트리를 직접 확인하면 모델이 어떤 특성을 기준으로 데이터를 나누는지 볼 수 있다. 그래서 다른 모델보다 예측 과정을 이해하기 쉽다고 느꼈다.
+
+* * *
 
 ##  📌6. max_depth
 
 과제 1에서는 결정트리의 max_depth 값을 바꿔가며 성능을 비교하였다.
 
+```python
 max_depths = [1, 3, 5, 10]
+```
 
 max_depth는 결정트리의 최대 깊이를 제한하는 하이퍼파라미터이다.
 
+```python
 for depth in max_depths:
     dt = DecisionTreeClassifier(max_depth=depth, random_state=42)
     dt.fit(sub_input, sub_target)
@@ -112,12 +129,14 @@ for depth in max_depths:
     print("Validation score:", val_score)
     print("Test score:", test_score)
     print()
-
+```
 max_depth 값이 너무 작으면 트리가 너무 단순해져서 데이터를 충분히 학습하지 못할 수 있다. 이 경우 과소적합이 발생할 수 있다.
 
 반대로 max_depth 값이 너무 크면 트리가 너무 복잡해져서 훈련 데이터에만 지나치게 맞춰질 수 있다. 이 경우 과대적합이 발생할 수 있다.
 
 그래서 max_depth 값을 여러 개 비교하면서 훈련 점수와 검증 점수를 함께 확인해야 한다.
+
+* * *
 
 ##  📌7. 하이퍼파라미터 튜닝
 
@@ -127,26 +146,35 @@ max_depth 값이 너무 작으면 트리가 너무 단순해져서 데이터를 
 
 이번 과제에서는 max_depth가 하이퍼파라미터에 해당한다.
 
+```python
 DecisionTreeClassifier(max_depth=depth, random_state=42)
+```
 
 max_depth를 1, 3, 5, 10으로 바꿔가며 점수를 비교해보면, 같은 데이터와 같은 모델을 사용하더라도 설정값에 따라 성능이 달라지는 것을 확인할 수 있다.
 
 이번 실습을 통해 모델을 선택하는 것만큼 모델의 설정값을 잘 정하는 것도 중요하다는 것을 알게 되었다.
 
+* * *
+
 ##  📌8. K-Fold 교차검증
 
 과제 2에서는 K-Fold 교차검증을 사용하였다.
 
+```python
 from sklearn.model_selection import cross_validate, KFold
+```
 
 K-Fold 교차검증은 훈련 데이터를 K개의 부분으로 나눈 뒤, 그중 하나를 검증 세트로 사용하고 나머지를 훈련 세트로 사용하는 과정을 반복하는 방법이다.
 
 이번 과제에서는 K값을 3, 5, 10으로 설정하였다.
 
+```python
 k_values = [3, 5, 10]
+```
 
 각 K값에 대해 교차검증을 수행하였다.
 
+```python
 for k in k_values:
     splitter = KFold(n_splits=k, shuffle=True, random_state=42)
 
@@ -161,10 +189,13 @@ for k in k_values:
     print("Fold scores:", scores['test_score'])
     print("Mean score:", np.mean(scores['test_score']))
     print()
+```
 
 여기서 Fold scores는 각 Fold에서 나온 검증 점수이고, Mean score는 그 점수들의 평균이다.
 
 K-Fold를 사용하면 한 번 나눈 검증 세트에만 의존하지 않고, 여러 번 검증한 결과를 평균으로 볼 수 있다. 그래서 모델 성능을 조금 더 안정적으로 판단할 수 있다.
+
+* * *
 
 ## 📌9. K값 비교
 
@@ -175,10 +206,14 @@ K값이 작으면 한 번에 사용하는 검증 세트의 크기가 커지고, 
 
 이번 실습에서는 K값을 바꿨을 때 Fold별 점수와 평균 점수가 어떻게 달라지는지 확인하였다.
 
+```python
 print("Fold scores:", scores['test_score'])
 print("Mean score:", np.mean(scores['test_score']))
+```
 
 K-Fold를 사용하면서 한 번의 검증 점수만 보고 모델을 판단하는 것보다 여러 번 검증한 평균 점수를 보는 것이 더 안정적이라고 느꼈다.
+
+* * *
 
 ##  📌10. 정리
 
@@ -202,6 +237,8 @@ K-Fold 교차검증은 데이터를 K개로 나누어 여러 번 검증하는 �
 Fold별 점수를 평균내면 모델 성능을 더 안정적으로 확인할 수 있다.
 
 결국 이번 주차의 핵심은 모델의 성능을 한 번의 점수만 보고 판단하지 않고, 검증 세트와 교차검증을 사용해서 더 적절한 모델 설정을 찾는 것이었다.
+
+* * *
 
 📌11. 느낀점
 
