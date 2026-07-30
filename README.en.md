@@ -1,4 +1,4 @@
-# Machine Learning Study — GDG on Campus Hongik
+# GDG-Hongik-AI-ML-Track
 
 Weekly study notes and Jupyter notebooks from the 2026 first-semester machine learning study at GDG on Campus Hongik University.
 
