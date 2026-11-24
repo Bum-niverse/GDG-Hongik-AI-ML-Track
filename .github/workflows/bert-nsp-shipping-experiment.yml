@@ -1,0 +1,47 @@
+name: BERT NSP shipping hard negatives
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  run-experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: week3/bert_nsp_shipping_requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r week3/bert_nsp_shipping_requirements.txt
+
+      - name: Run shipping-domain NSP experiment
+        env:
+          HF_HUB_DISABLE_XET: "1"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          python week3/bert_nsp_shipping_experiment.py             --out week3/bert_nsp_shipping_results             --year 2020             --per-category 40             --batch 8             --bootstrap 2000
+
+      - name: Show summary
+        if: always()
+        run: |
+          if [ -f week3/bert_nsp_shipping_results/summary.csv ]; then cat week3/bert_nsp_shipping_results/summary.csv; fi
+          if [ -f week3/bert_nsp_shipping_results/category_metrics.csv ]; then cat week3/bert_nsp_shipping_results/category_metrics.csv; fi
+          if [ -f week3/bert_nsp_shipping_results/donor_stats.csv ]; then cat week3/bert_nsp_shipping_results/donor_stats.csv; fi
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bert-nsp-shipping-results
+          path: week3/bert_nsp_shipping_results/
+          if-no-files-found: warn
+          retention-days: 14
