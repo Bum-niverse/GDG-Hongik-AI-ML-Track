@@ -1,0 +1,49 @@
+name: BERT NSP same-topic confusion PR
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run-experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: week3/bert_nsp_requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r week3/bert_nsp_requirements.txt
+
+      - name: Run BERT NSP experiment
+        env:
+          HF_HUB_DISABLE_XET: "1"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          python week3/bert_nsp_experiment.py --out week3/bert_nsp_results --per-topic 40 --batch 8 --bootstrap 2000
+
+      - name: Show summary
+        if: always()
+        run: |
+          if [ -f week3/bert_nsp_results/summary.csv ]; then cat week3/bert_nsp_results/summary.csv; fi
+          if [ -f week3/bert_nsp_results/summary.json ]; then cat week3/bert_nsp_results/summary.json; fi
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bert-nsp-results
+          path: week3/bert_nsp_results/
+          if-no-files-found: warn
+          retention-days: 14
