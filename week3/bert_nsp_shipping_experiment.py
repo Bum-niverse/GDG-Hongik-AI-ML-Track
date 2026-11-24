@@ -21,7 +21,8 @@ CATEGORIES = {
     "ports_congestion": [
         "port congestion","congestion","port delay","port delays","berth","terminal congestion",
         "container terminal","port operations","port strike","dockworker","dockworkers","stevedore",
-        "port throughput","port capacity","port closure","port disruption","port authority"
+        "port throughput","port capacity","port closure","port disruption","port authority",
+        "port","ports","terminal","terminals","harbor","harbour","dock","docks"
     ],
     "routes_geopolitics": [
         "suez canal","panama canal","red sea","cape of good hope","strait of hormuz",
